@@ -4,6 +4,7 @@ import (
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-gonic/gin"
+	"github.com/ipan97/mumu-store/app"
 	"github.com/ipan97/mumu-store/app/models"
 	"github.com/ipan97/mumu-store/config"
 	"html/template"
@@ -37,6 +38,19 @@ func Router() *gin.Engine {
 			"title": "Mumu Store",
 		})
 	})
+
+	// Inject Controllers
+	di := app.NewDependencyInjection(db)
+	categoryController := di.InjectCategoryController()
+
+	// API Route
+	api := r.Group("/api")
+	{
+		v1 := api.Group("v1")
+		{
+			v1.GET("/categories", categoryController.FindAllCategories)
+		}
+	}
 
 	return r
 }
