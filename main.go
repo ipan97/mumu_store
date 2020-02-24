@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/ipan97/mumu-store/routers"
+	"github.com/ipan97/mumu-store/app/models"
+	"github.com/ipan97/mumu-store/config"
+	"github.com/ipan97/mumu-store/server"
 	"log"
 	"net/http"
 	"os"
@@ -12,14 +14,21 @@ import (
 )
 
 func main() {
-	app := routers.Router()
-	server := &http.Server{
+	dbConfig := config.Config{
+		Database:      config.NewPostgreSQLConfig(),
+		IsDevelopment: true,
+	}
+	db, _ := dbConfig.GetDB()
+	db.AutoMigrate(models.User{}, models.Category{}, models.Brand{}, models.Product{})
+
+	s := server.Setup(db)
+	httpServer := &http.Server{
 		Addr:    ":" + os.Getenv("APP_PORT"),
-		Handler: app,
+		Handler: s,
 	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
@@ -30,7 +39,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	if err := server.Shutdown(ctx); err != nil {
+	if err := httpServer.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
 	select {

@@ -1,37 +1,13 @@
 package routers
 
 import (
-	"github.com/foolin/goview"
-	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-gonic/gin"
 	"github.com/ipan97/mumu-store/app"
-	"github.com/ipan97/mumu-store/app/models"
-	"github.com/ipan97/mumu-store/config"
-	"html/template"
+	"github.com/jinzhu/gorm"
 	"net/http"
 )
 
-func Router() *gin.Engine {
-	r := gin.Default()
-
-	r.Static("/public", "./public")
-	r.HTMLRender = ginview.New(goview.Config{
-		Root:         "./app/views",
-		Extension:    ".html",
-		Master:       "layouts/master",
-		Partials:     []string{},
-		Funcs:        make(template.FuncMap),
-		DisableCache: false,
-		Delims:       goview.Delims{Left: "{{", Right: "}}"},
-	})
-
-	dbConfig := config.Config{
-		Database:      config.NewPostgreSQLConfig(),
-		IsDevelopment: true,
-	}
-	db, _ := dbConfig.GetDB()
-	db.AutoMigrate(models.User{}, models.Category{}, models.Brand{}, models.Product{})
-
+func Initialize(r *gin.Engine, db *gorm.DB) {
 	// Web Route
 	r.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index", gin.H{
@@ -39,18 +15,14 @@ func Router() *gin.Engine {
 		})
 	})
 
-	// Inject Controllers
+	// Instance dependency injection
 	di := app.NewDependencyInjection(db)
-	categoryController := di.InjectCategoryController()
 
 	// API Route
 	api := r.Group("/api")
 	{
-		v1 := api.Group("v1")
-		{
-			v1.GET("/categories", categoryController.FindAllCategories)
-		}
+		categoryController := di.InjectCategoryController()
+		api.GET("/categories", categoryController.FindAllCategories)
 	}
 
-	return r
 }
