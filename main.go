@@ -5,6 +5,7 @@ import (
 	"github.com/ipan97/mumu-store/app/models"
 	"github.com/ipan97/mumu-store/config"
 	"github.com/ipan97/mumu-store/server"
+	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
@@ -14,12 +15,21 @@ import (
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	dbConfig := config.Config{
 		Database:      config.NewPostgreSQLConfig(),
 		IsDevelopment: true,
 	}
 	db, _ := dbConfig.GetDB()
-	db.AutoMigrate(models.User{}, models.Category{}, models.Brand{}, models.Product{})
+
+	db.AutoMigrate(
+		models.User{},
+		models.Category{},
+		models.Brand{},
+		models.Product{},
+	)
 
 	s := server.Setup(db)
 	httpServer := &http.Server{
@@ -39,6 +49,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	defer db.Close()
 	if err := httpServer.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}

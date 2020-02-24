@@ -23,6 +23,5 @@ func Setup(db *gorm.DB) *gin.Engine {
 		Delims:       goview.Delims{Left: "{{", Right: "}}"},
 	})
 	routers.Initialize(r, db)
-	r.Run()
 	return r
 }

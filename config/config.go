@@ -59,6 +59,7 @@ func (conf Config) GetDB() (*gorm.DB, error) {
 		}
 		db.DB().SetMaxIdleConns(conf.Database.MaxIdleConnection)
 		db.DB().SetMaxOpenConns(conf.Database.MaxOpenConnection)
+		db.DB().SetConnMaxLifetime(time.Hour)
 		db.LogMode(conf.IsDevelopment)
 		return db, nil
 	}
@@ -78,7 +79,7 @@ func NewPostgreSQLConfig() DatabaseConfig {
 		User:              os.Getenv("DB_USERNAME"),
 		Password:          os.Getenv("DB_PASSWORD"),
 		DatabaseName:      os.Getenv("DB_DATABASE"),
-		MaxIdleConnection: 5,
-		MaxOpenConnection: 5,
+		MaxIdleConnection: 10,
+		MaxOpenConnection: 100,
 	}
 }
