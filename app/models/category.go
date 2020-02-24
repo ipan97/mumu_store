@@ -8,5 +8,5 @@ type Category struct {
 	Cover       string `gorm:"column:cover;type:varchar(255)"`
 	Description string `gorm:"column:description;type:text"`
 	Slug        string `gorm:"column:slug;type:varchar(50)"`
-	Status      int32    `gorm:"column:status;type:int"`
+	Status      int32  `gorm:"column:status;type:int"`
 }

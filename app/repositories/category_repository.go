@@ -13,11 +13,24 @@ func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
 	return &CategoryRepository{db: db}
 }
 
-func (r *CategoryRepository) FindAll() (*[]models.Category, error) {
+func (categoryRepository *CategoryRepository) FindAll() (*[]models.Category, error) {
 	var categories []models.Category
-	if err := r.db.Model(models.Category{}).Find(&categories).Error; err != nil {
-		return nil, err
-	} else {
-		return &categories, nil
-	}
+	return &categories, categoryRepository.db.Model(models.Category{}).Find(&categories).Error
+}
+
+func (categoryRepository *CategoryRepository) FindById(id uint) (models.Category, error) {
+	var category models.Category
+	return category, categoryRepository.db.Model(models.Category{}).Take(&category, id).Error
+}
+
+func (categoryRepository *CategoryRepository) Save(category *models.Category) error {
+	return categoryRepository.db.Model(models.Category{}).Save(&category).Error
+}
+
+func (categoryRepository *CategoryRepository) Update(category *models.Category) {
+
+}
+
+func (categoryRepository *CategoryRepository) Delete(id uint) {
+
 }
