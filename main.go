@@ -2,27 +2,25 @@ package main
 
 import (
 	"context"
-	"github.com/ipan97/mumu-store/app/models"
-	"github.com/ipan97/mumu-store/config"
-	"github.com/ipan97/mumu-store/server"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/ipan97/mumu-store/app/models"
+	"github.com/ipan97/mumu-store/config"
+	"github.com/ipan97/mumu-store/server"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	dbConfig := config.Config{
-		Database:      config.NewPostgreSQLConfig(),
-		IsDevelopment: true,
-	}
-	db, _ := dbConfig.GetDB()
+	dbConfig := config.New(config.NewPostgreSQLConfig(), true)
+	db, _ := dbConfig.DB()
 
 	db.AutoMigrate(
 		models.User{},
@@ -42,7 +40,7 @@ func main() {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Print("Shutdown Server ...")
@@ -55,7 +53,8 @@ func main() {
 	}
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
+		log.Println("Timeout of 5 seconds.")
+	default:
 	}
 	log.Println("Server exiting")
 }

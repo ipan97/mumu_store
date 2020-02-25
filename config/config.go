@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/joho/godotenv"
 )
 
 func init() {
@@ -43,7 +44,14 @@ type Config struct {
 	IsDevelopment bool
 }
 
-func (conf Config) GetDB() (*gorm.DB, error) {
+func New(db DatabaseConfig, isDev bool) *Config {
+	return &Config{
+		Database:      db,
+		IsDevelopment: isDev,
+	}
+}
+
+func (conf Config) DB() (*gorm.DB, error) {
 	if conf.Database.Driver == "postgres" {
 		args := fmt.Sprintf(
 			"sslmode=disable host=%s port=%d user=%s password='%s' dbname=%s",
