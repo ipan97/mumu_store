@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/ipan97/mumu-store/app/controllers/admin"
+	"github.com/ipan97/mumu-store/app/controllers"
 	"github.com/ipan97/mumu-store/app/controllers/api"
 	"github.com/ipan97/mumu-store/app/repositories"
 	"github.com/ipan97/mumu-store/app/services"
@@ -31,6 +31,6 @@ func (di *DependencyInjection) InjectBrandController() *api.BrandController {
 	return api.NewBrandController(brandService)
 }
 
-func (di *DependencyInjection) InjectDashboardController() *admin.DashboardController {
-	return admin.NewDashboardController()
+func (di *DependencyInjection) InjectDashboardController() *controllers.DashboardController {
+	return controllers.NewDashboardController()
 }

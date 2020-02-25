@@ -17,7 +17,7 @@ func Initialize(r *gin.Engine, db *gorm.DB) {
 	// Web Route
 	r.Static("/public", "./public")
 	r.HTMLRender = ginview.New(goview.Config{
-		Root:         "./app/views",
+		Root:         "./app/views/frontend",
 		Extension:    ".html",
 		Master:       "layouts/master",
 		Partials:     []string{},
@@ -36,7 +36,7 @@ func Initialize(r *gin.Engine, db *gorm.DB) {
 
 	// Admin Route
 	viewAdmin := ginview.NewMiddleware(goview.Config{
-		Root:         "./app/views/admin",
+		Root:         "./app/views/backend",
 		Extension:    ".html",
 		Master:       "layouts/master",
 		Partials:     []string{},

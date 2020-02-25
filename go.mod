@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/foolin/goview v0.2.0
+	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
